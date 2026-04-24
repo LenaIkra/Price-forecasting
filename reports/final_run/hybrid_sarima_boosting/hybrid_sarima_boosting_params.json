@@ -1,0 +1,19 @@
+{
+    "best_alpha": 0.9,
+    "boosting_params": {
+        "max_iter": 500,
+        "learning_rate": 0.03,
+        "max_depth": 10
+    },
+    "sarima_order": [
+        1,
+        1,
+        1
+    ],
+    "sarima_seasonal_order": [
+        1,
+        0,
+        1,
+        12
+    ]
+}

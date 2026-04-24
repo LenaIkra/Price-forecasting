@@ -1,0 +1,5 @@
+﻿model_name,feature_set,MAE,RMSE,MAPE,best_params,notes
+sarima,univariate_target_only,0.018295798644694456,0.15837650264720834,0.6168770803552269,"{'order': (1, 1, 1), 'seasonal_order': (1, 0, 1, 12)}",final run on all series
+boosting,all_features,0.013510001372402268,0.05292499849347346,0.7938772811892361,"{'max_iter': 500, 'learning_rate': 0.03, 'max_depth': 10}",final run on top-3000 series
+m5_style,all_features,0.015371336083477053,0.058251578198142764,0.7118943729109319,"{'max_iter': 500, 'learning_rate': 0.03, 'max_depth': 10}",final run on top-3000 series
+hybrid_sarima_boosting,all_features,0.013285205769539551,0.05175326467548314,0.7397479450952571,,final run on top-3000 series

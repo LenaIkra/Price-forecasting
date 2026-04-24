@@ -14,7 +14,7 @@ data/
 models/
 __pycache__/
 *.parquet
-*.csv
+
 *.log
 *.pt
 *.pkl

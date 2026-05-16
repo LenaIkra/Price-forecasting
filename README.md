@@ -69,7 +69,7 @@ reports/final_run/hybrid_sarima_boosting/
 Для оценки моделей используются:
 	•	MAE
 	•	RMSE
-	•	MAPE
+	•	WAPE
 
 Особенности реализации
 	•	разбиение train/test выполняется по времени;

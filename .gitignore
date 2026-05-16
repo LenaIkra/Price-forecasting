@@ -1,20 +1,60 @@
-.venv/
+# =========================
+# Python
+# =========================
 __pycache__/
-*.pyc
+*.py[cod]
 
-data/*.csv
-data/*.zip
+# =========================
+# Virtual environment
+# =========================
+.venv/
+venv/
 
-.ipynb_checkpoints
+# =========================
+# Jupyter
+# =========================
+.ipynb_checkpoints/
 
+# =========================
+# macOS
+# =========================
 .DS_Store
 
-.venv/
-data/
-models/
-__pycache__/
-*.parquet
-
+# =========================
+# Logs
+# =========================
 *.log
-*.pt
-*.pkl
+
+# =========================
+# Large raw datasets
+# =========================
+data/raw/*.csv
+data/raw/*.zip
+
+# Processed datasets
+# =========================
+data/processed/*.parquet
+
+# =========================
+# Trained models
+# =========================
+models/**/*.pt
+models/**/*.pkl
+
+# оставить финальные модели
+!models/boosting_model.pkl
+!models/m5_style_model.pkl
+!models/lstm_embeddings_model.pt
+
+# =========================
+# Temporary experiment artifacts
+# =========================
+reports/**/*.json
+reports/**/sarima_progress.csv
+reports/**/sarima_predictions.json
+reports/**/sarima_test_predictions.csv
+
+# =========================
+# Notebook outputs
+# =========================
+*.nbconvert.ipynb

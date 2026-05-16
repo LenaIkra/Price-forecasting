@@ -33,7 +33,7 @@ class FinalResultsManager:
             "feature_set": feature_set_name,
             "MAE": metrics.get("MAE"),
             "RMSE": metrics.get("RMSE"),
-            "MAPE": metrics.get("MAPE"),
+            "WAPE": metrics.get("WAPE"),
             "best_params": str(best_params) if best_params else "",
             "notes": notes or "",
         }

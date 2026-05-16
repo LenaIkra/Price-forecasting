@@ -118,6 +118,7 @@ class LSTMTrainer:
         seq_feature_cols: list[str],
         model_path: Path,
         metrics_path: Path,
+        preds_path: Path | None = None,
     ) -> tuple[dict, np.ndarray]:
         print(f"[LSTM-Emb] device: {self.device}")
         print("[LSTM-Emb] splitting numeric/categorical features...")
@@ -244,6 +245,17 @@ class LSTMTrainer:
 
         metrics = evaluate_regression(np.array(all_true), np.array(all_preds))
         save_metrics(metrics, metrics_path)
+
+        if preds_path is not None:
+            preds_path.parent.mkdir(parents=True, exist_ok=True)
+
+            preds_df = pd.DataFrame({
+                "y_true": all_true,
+                "prediction": all_preds,
+            })
+
+            preds_df.to_csv(preds_path, index=False, encoding="utf-8-sig")
+            print(f"[LSTM-Emb] predictions saved to {preds_path}")
 
         print(f"[LSTM-Emb] metrics: {metrics}")
         return metrics, np.array(all_preds)

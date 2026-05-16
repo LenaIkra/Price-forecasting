@@ -20,7 +20,7 @@ class ResultsManager:
             "model_name": model_name,
             "MAE": metrics.get("MAE"),
             "RMSE": metrics.get("RMSE"),
-            "MAPE": metrics.get("MAPE"),
+            "WAPE": metrics.get("WAPE"),
             "best_params": json.dumps(best_params, ensure_ascii=False) if best_params else "",
             "notes": notes or "",
         }
@@ -38,4 +38,4 @@ class ResultsManager:
     def load(self) -> pd.DataFrame:
         if self.results_csv_path.exists():
             return pd.read_csv(self.results_csv_path)
-        return pd.DataFrame(columns=["model_name", "MAE", "RMSE", "MAPE", "best_params", "notes"])
+        return pd.DataFrame(columns=["model_name", "MAE", "RMSE", "WAPE", "best_params", "notes"])

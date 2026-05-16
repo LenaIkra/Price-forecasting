@@ -1,0 +1,120 @@
+from pathlib import Path
+
+import pandas as pd
+
+
+def main():
+    reports_dir = Path("reports/baseline_run")
+
+    preds_path = reports_dir / "boosting" / "predictions.csv"
+    panel_path = reports_dir / "price_panel_final.parquet"
+
+    output_dir = reports_dir / "economic_effect"
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    # 1. Загружаем прогнозы лучшей модели
+    preds = pd.read_csv(preds_path)
+
+    # 2. Загружаем аналитический набор, чтобы взять продажи
+    panel = pd.read_parquet(
+        panel_path,
+        columns=["store_id", "item_id", "date", "sales_qty"],
+    )
+    # 3. Приводим даты к одному типу
+
+    preds["date"] = pd.to_datetime(preds["date"])
+    panel["date"] = pd.to_datetime(panel["date"])
+
+    # 4. Присоединяем продажи к прогнозам
+    df = preds.merge(
+        panel,
+        on=["store_id", "item_id", "date"],
+        how="left",
+    )
+    df = df.rename(columns={"sales_qty": "sales"})
+
+    # 5. Считаем отклонение прогноза цены
+    df["price_deviation"] = df["y_true"] - df["y_pred"]
+
+    # 6. Считаем абсолютное отклонение цены
+    df["abs_price_deviation"] = df["price_deviation"].abs()
+
+    # 7. Оцениваем потенциальное влияние ошибки цены на выручку
+    df["revenue_deviation"] = df["sales"] * df["price_deviation"]
+    df["abs_revenue_deviation"] = df["sales"] * df["abs_price_deviation"]
+
+    # 8. Сводные показатели
+    summary = pd.DataFrame(
+        {
+            "metric": [
+                "Количество наблюдений",
+                "Суммарные продажи",
+                "Среднее абсолютное отклонение цены",
+                "Суммарное абсолютное отклонение выручки",
+                "Среднее абсолютное отклонение выручки на наблюдение",
+            ],
+            "value": [
+                len(df),
+                df["sales"].sum(),
+                df["abs_price_deviation"].mean(),
+                df["abs_revenue_deviation"].sum(),
+                df["abs_revenue_deviation"].mean(),
+            ],
+        }
+    )
+
+    # 9. Разделяем сценарии недооценки и переоценки цены
+    underpricing = df[df["y_pred"] < df["y_true"]]
+    overpricing = df[df["y_pred"] > df["y_true"]]
+
+    scenario_summary = pd.DataFrame(
+        {
+            "scenario": [
+                "Недооценка цены моделью",
+                "Переоценка цены моделью",
+            ],
+            "observations": [
+                len(underpricing),
+                len(overpricing),
+            ],
+            "sales_sum": [
+                underpricing["sales"].sum(),
+                overpricing["sales"].sum(),
+            ],
+            "abs_revenue_deviation": [
+                underpricing["abs_revenue_deviation"].sum(),
+                overpricing["abs_revenue_deviation"].sum(),
+            ],
+        }
+    )
+
+    # 10. Сохраняем результаты
+    df.to_csv(
+        output_dir / "economic_effect_details.csv",
+        index=False,
+        encoding="utf-8-sig",
+    )
+
+    summary.to_csv(
+        output_dir / "economic_effect_summary.csv",
+        index=False,
+        encoding="utf-8-sig",
+    )
+
+    scenario_summary.to_csv(
+        output_dir / "economic_effect_by_scenario.csv",
+        index=False,
+        encoding="utf-8-sig",
+    )
+
+    print("\nSummary:")
+    print(summary)
+
+    print("\nScenario summary:")
+    print(scenario_summary)
+
+    print(f"\nSaved to: {output_dir}")
+
+
+if __name__ == "__main__":
+    main()

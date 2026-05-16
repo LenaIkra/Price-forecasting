@@ -34,6 +34,7 @@ class M5StyleTrainer:
         model_path: Path,
         metrics_path: Path,
         do_search: bool = False,
+        preds_path: Path | None = None,
     ) -> tuple[dict, dict]:
         numeric_cols, categorical_cols = self._split_feature_types(train_df, feature_cols)
 
@@ -55,6 +56,7 @@ class M5StyleTrainer:
         best_metrics = None
         best_params = None
         best_model = None
+        best_preds = None
 
         for params in search_space:
             print(f"[M5-style] testing params={params}")
@@ -82,8 +84,22 @@ class M5StyleTrainer:
                 best_metrics = metrics
                 best_params = params
                 best_model = model
+                best_preds = preds
 
         best_model.save(model_path)
         save_metrics(best_metrics, metrics_path)
+
+        if preds_path is not None:
+            preds_path.parent.mkdir(parents=True, exist_ok=True)
+
+            preds_df = test_df[
+                list(self.data_cfg.series_id_cols) + [self.data_cfg.date_col]
+            ].copy()
+
+            preds_df["y_true"] = y_test
+            preds_df["prediction"] = best_preds
+
+            preds_df.to_csv(preds_path, index=False, encoding="utf-8-sig")
+            print(f"[M5-style] predictions saved to {preds_path}")
 
         return best_metrics, best_params

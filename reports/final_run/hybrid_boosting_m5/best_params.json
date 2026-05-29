@@ -1,0 +1,7 @@
+{
+    "weight_boosting": 0.08,
+    "weight_m5": 0.92,
+    "selection_metric": "RMSE",
+    "grid_step": 0.01,
+    "n_observations": 60000
+}

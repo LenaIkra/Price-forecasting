@@ -14,6 +14,7 @@ venv/
 # Jupyter
 # =========================
 .ipynb_checkpoints/
+*.nbconvert.ipynb
 
 # =========================
 # macOS
@@ -26,35 +27,69 @@ venv/
 *.log
 
 # =========================
-# Large raw datasets
+# Data
 # =========================
-data/raw/*.csv
-data/raw/*.zip
-
-# Processed datasets
-# =========================
-data/processed/*.parquet
+data/
+*.parquet
 
 # =========================
 # Trained models
+# по умолчанию игнорируем все модели
 # =========================
-models/**/*.pt
-models/**/*.pkl
+models/**
 
-# оставить финальные модели
-!models/boosting_model.pkl
-!models/m5_style_model.pkl
-!models/lstm_embeddings_model.pt
-
-# =========================
-# Temporary experiment artifacts
-# =========================
-reports/**/*.json
-reports/**/sarima_progress.csv
-reports/**/sarima_predictions.json
-reports/**/sarima_test_predictions.csv
+# оставляем только финальные модели
+!models/
+!models/final_run/
+!models/final_run/boosting_model.pkl
+!models/final_run/m5_style_model.pkl
+!models/final_run/lstm_embeddings_model.pt
+!models/final_run/lstm_embeddings_model.meta.json
 
 # =========================
-# Notebook outputs
+# Reports
+# по умолчанию игнорируем все отчеты и артефакты
 # =========================
-*.nbconvert.ipynb
+reports/**
+
+# оставляем только финальные папки и итоговые результаты
+!reports/
+!reports/final_run/
+
+# итоговое сравнение моделей
+!reports/final_run/final_comparison.csv
+!reports/final_run/final_comparison_sorted.csv
+
+# Gradient Boosting: только метрики и параметры
+!reports/final_run/boosting/
+!reports/final_run/boosting/metrics.json
+!reports/final_run/boosting/best_params.json
+
+# M5-style: только метрики и параметры
+!reports/final_run/m5_style/
+!reports/final_run/m5_style/metrics.json
+!reports/final_run/m5_style/best_params.json
+
+# LSTM: только метрики и параметры
+!reports/final_run/lstm_embeddings/
+!reports/final_run/lstm_embeddings/metrics.json
+!reports/final_run/lstm_embeddings/best_params.json
+
+# Hybrid Boosting + M5-style: только метрики и параметры
+!reports/final_run/hybrid_boosting_m5/
+!reports/final_run/hybrid_boosting_m5/metrics.json
+!reports/final_run/hybrid_boosting_m5/best_params.json
+
+# независимая проверка
+!reports/final_run/independent_validation/
+!reports/final_run/independent_validation/m5_style_metrics_with_ci.csv
+!reports/final_run/independent_validation/m5_style_metrics_with_ci.json
+
+# экономический эффект
+!reports/final_run/economic_effect/
+!reports/final_run/economic_effect/economic_effect_summary.csv
+!reports/final_run/economic_effect/economic_effect_by_scenario.csv
+
+# статистическая значимость
+!reports/final_run/significance_tests/
+!reports/final_run/significance_tests/model_significance_tests.csv

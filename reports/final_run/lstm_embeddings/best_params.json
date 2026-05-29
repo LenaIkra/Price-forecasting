@@ -1,0 +1,21 @@
+{
+    "model_type": "LSTMEmbeddingRegressor",
+    "seq_len": 12,
+    "hidden_size": 64,
+    "num_layers": 2,
+    "dropout": 0.2,
+    "epochs": 5,
+    "batch_size": 256,
+    "learning_rate": 0.001,
+    "optimizer": "Adam",
+    "loss_function": "MSELoss",
+    "embedding_dim_item_id": 16,
+    "embedding_dim_store_id": 4,
+    "embedding_dim_dept_id": 4,
+    "embedding_dim_cat_id": 3,
+    "embedding_dim_state_id": 3,
+    "event_name_1_embedding_dim": 8,
+    "event_type_1_embedding_dim": 4,
+    "target_transform": "none",
+    "notes": "parameters from TrainConfig; no Optuna tuning"
+}

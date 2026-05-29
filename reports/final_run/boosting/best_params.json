@@ -1,0 +1,21 @@
+{
+    "max_iter": 768,
+    "learning_rate": 0.036324842538302864,
+    "max_depth": 10,
+    "search_method": "optuna",
+    "optuna_best_value": 0.08263713054175736,
+    "optuna_trials": 25,
+    "model_type": "PriceBoostingModel",
+    "feature_count": 42,
+    "numeric_feature_count": 35,
+    "categorical_feature_count": 7,
+    "categorical_cols": [
+        "store_id",
+        "item_id",
+        "dept_id",
+        "cat_id",
+        "state_id",
+        "event_name_1",
+        "event_type_1"
+    ]
+}

@@ -1,0 +1,40 @@
+{
+    "objective": "regression",
+    "metric": "rmse",
+    "boosting_type": "gbdt",
+    "n_estimators": 482,
+    "learning_rate": 0.02638322985605319,
+    "num_leaves": 120,
+    "max_depth": 11,
+    "min_child_samples": 26,
+    "subsample": 0.9477197922571763,
+    "colsample_bytree": 0.7810371693093017,
+    "reg_alpha": 0.0019739566133921255,
+    "reg_lambda": 0.00023448641182148257,
+    "random_state": 42,
+    "n_jobs": -1,
+    "verbosity": -1,
+    "optuna_best_value": 0.03522322192434001,
+    "optuna_trials": 30,
+    "model_type": "LightGBM",
+    "target_transform": "log1p",
+    "feature_count": 77,
+    "numeric_feature_count": 70,
+    "categorical_feature_count": 7,
+    "categorical_cols": [
+        "store_id",
+        "item_id",
+        "dept_id",
+        "cat_id",
+        "state_id",
+        "event_name_1",
+        "event_type_1"
+    ],
+    "hierarchy_cols_used": [
+        "state_id",
+        "store_id",
+        "cat_id",
+        "dept_id",
+        "item_id"
+    ]
+}

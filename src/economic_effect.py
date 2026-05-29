@@ -4,9 +4,21 @@ import pandas as pd
 
 
 def main():
-    reports_dir = Path("reports/baseline_run")
+    """
+    Расчет потенциального экономического эффекта для лучшей модели M5-style Boosting.
 
-    preds_path = reports_dir / "boosting" / "predictions.csv"
+    Скрипт:
+    1. Загружает прогнозы модели M5-style.
+    2. Загружает аналитическую панель, чтобы взять фактические продажи.
+    3. Соединяет прогнозы с продажами по store_id, item_id и date.
+    4. Считает отклонение прогнозируемой цены от фактической.
+    5. Оценивает потенциальное отклонение выручки с учетом объема продаж.
+    6. Сохраняет итоговые таблицы для ВКР.
+    """
+
+    reports_dir = Path("reports/final_run")
+
+    preds_path = reports_dir / "m5_style" / "predictions.csv"
     panel_path = reports_dir / "price_panel_final.parquet"
 
     output_dir = reports_dir / "economic_effect"
@@ -15,35 +27,56 @@ def main():
     # 1. Загружаем прогнозы лучшей модели
     preds = pd.read_csv(preds_path)
 
-    # 2. Загружаем аналитический набор, чтобы взять продажи
+    # 2. Приводим названия колонок к единому виду
+    # В разных версиях pipeline прогноз мог называться prediction или y_pred.
+    if "prediction" in preds.columns and "y_pred" not in preds.columns:
+        preds = preds.rename(columns={"prediction": "y_pred"})
+
+    if "target" in preds.columns and "y_true" not in preds.columns:
+        preds = preds.rename(columns={"target": "y_true"})
+
+    required_pred_cols = {"store_id", "item_id", "date", "y_true", "y_pred"}
+    missing_pred_cols = required_pred_cols - set(preds.columns)
+
+    if missing_pred_cols:
+        raise ValueError(
+            f"В файле прогнозов не хватает колонок: {missing_pred_cols}. "
+            f"Фактические колонки: {preds.columns.tolist()}"
+        )
+
+    # 3. Загружаем аналитический набор, чтобы взять продажи
     panel = pd.read_parquet(
         panel_path,
         columns=["store_id", "item_id", "date", "sales_qty"],
     )
-    # 3. Приводим даты к одному типу
 
+    # 4. Приводим даты к одному типу
     preds["date"] = pd.to_datetime(preds["date"])
     panel["date"] = pd.to_datetime(panel["date"])
 
-    # 4. Присоединяем продажи к прогнозам
+    # 5. Присоединяем продажи к прогнозам
     df = preds.merge(
         panel,
         on=["store_id", "item_id", "date"],
         how="left",
     )
+
     df = df.rename(columns={"sales_qty": "sales"})
 
-    # 5. Считаем отклонение прогноза цены
+    # Если по каким-то строкам продажи не подтянулись, заменяем на 0
+    df["sales"] = df["sales"].fillna(0)
+
+    # 6. Считаем отклонение прогноза цены
     df["price_deviation"] = df["y_true"] - df["y_pred"]
 
-    # 6. Считаем абсолютное отклонение цены
+    # 7. Считаем абсолютное отклонение цены
     df["abs_price_deviation"] = df["price_deviation"].abs()
 
-    # 7. Оцениваем потенциальное влияние ошибки цены на выручку
+    # 8. Оцениваем потенциальное влияние ошибки цены на выручку
     df["revenue_deviation"] = df["sales"] * df["price_deviation"]
     df["abs_revenue_deviation"] = df["sales"] * df["abs_price_deviation"]
 
-    # 8. Сводные показатели
+    # 9. Сводные показатели
     summary = pd.DataFrame(
         {
             "metric": [
@@ -63,7 +96,7 @@ def main():
         }
     )
 
-    # 9. Разделяем сценарии недооценки и переоценки цены
+    # 10. Разделяем сценарии недооценки и переоценки цены
     underpricing = df[df["y_pred"] < df["y_true"]]
     overpricing = df[df["y_pred"] > df["y_true"]]
 
@@ -88,7 +121,7 @@ def main():
         }
     )
 
-    # 10. Сохраняем результаты
+    # 11. Сохраняем результаты
     df.to_csv(
         output_dir / "economic_effect_details.csv",
         index=False,
